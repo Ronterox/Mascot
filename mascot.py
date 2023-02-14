@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import random
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
@@ -56,9 +55,7 @@ class MikuWindow(QMainWindow):
         StickyNote().mainloop()
 
     def open_quotes(self, _e):
-        self.bubble.label.setText(rng_quote())
-        self.bubble.setVisible(False)
-        self.bubble.setVisible(True)
+        self.bubble.change_text(rng_quote())
 
     def show_label(self, _e):
         for lab in self.labels:
@@ -73,24 +70,24 @@ class MikuWindow(QMainWindow):
         if not self.can_move:
             return
 
-        x, y = self.x() + rng_range(self.SPD), \
-            self.y() + rng_range(self.SPD)
+        x, y = self.x() + rng_range(self.SPD), self.y() + rng_range(self.SPD)
 
         if x < 0:
             x = 0
         elif x + self.width() > self.WIDTH:
             x = self.WIDTH - self.width()
+
         if y < 0:
             y = 0
         elif y + self.height() > self.HEIGHT:
             y = self.HEIGHT - self.height()
 
         self.move(x, y)
-        self.bubble.move(x - self.bubble.label.width() //
-                         2, y - self.bubble.label.height())
+        self.bubble.move(x - self.bubble.label.width() // 2, y - self.bubble.label.height())
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    MikuWindow(ChatBubbleWindow(rng_quote())).show()
+    win = MikuWindow(ChatBubbleWindow(rng_quote()))
+    win.show()
     app.exec_()
