@@ -1,4 +1,5 @@
-note.txt
-chats.txt
+output.wav
 __pycache__/*
-
+*.txt
+*.html
+*.log

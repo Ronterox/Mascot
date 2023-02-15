@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QMainWindow
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from rng import rng_quote
 
 
 class ChatBubbleLabel(QLabel):
@@ -32,7 +31,8 @@ class ChatBubbleWindow(QMainWindow):
         self.change_text(text)
     
     def change_text(self, text):
-        if self.timer:
+        self.label.setText("")
+        if self.timer != None:
             self.killTimer(self.timer)
         self.text = text
         self.timer = self.startTimer(35)
@@ -44,10 +44,11 @@ class ChatBubbleWindow(QMainWindow):
             self.label.setText(self.text[:self.counter])
         else:
             self.killTimer(self.timer)
+            self.timer = None
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    win = ChatBubbleWindow(rng_quote())
+    win = ChatBubbleWindow("Words words words")
     win.show()
     app.exec_()
