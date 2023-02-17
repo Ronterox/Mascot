@@ -19,9 +19,9 @@ class MikuWindow(QMainWindow):
         self.name = get_response("#getName.capitalize#")
         self.bubble = bubble
 
+        # Tell window manager to ignore this window
+        self.setWindowFlag(Qt.X11BypassWindowManagerHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.can_move = True
         self.mascot_label = self.create_label("Miku", self.show_label, True)
