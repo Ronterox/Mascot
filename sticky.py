@@ -1,11 +1,12 @@
 import random
 import tkinter as tk
 
+# TODO: Just use json bruh
+
 class StickyNote(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Sticky Note")
-
         self.notes = []
 
         try:
@@ -28,14 +29,14 @@ class StickyNote(tk.Tk):
         note.geometry(f"+{random.randint(0, self.winfo_screenwidth())}+{random.randint(0, self.winfo_screenheight())}")
         text = tk.Text(note, height=10, width=40)
         note.attributes('-topmost', True)
-        note.bind("<Destroy>", lambda event: self.remove_note(event, note))
+        note.bind("<Destroy>", lambda _: self.remove_note(note))
         text.pack()
         self.notes.append((note, text))
 
 
-    def remove_note(self, event, note):
+    def remove_note(self, note):
         note.destroy()
-        notes = [n for n in self.notes if n[0] != note]
+        self.notes = [n for n in self.notes if n[0] != note]
 
 
     def save_note(self):

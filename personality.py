@@ -49,4 +49,4 @@ def get_response(txt, seed=None):
 
 if __name__ == "__main__":
     tr.random.seed(2217771)
-    print(phrases.flatten("[name:#getName#]#salutation#, \n#goodbye#"))
+    print(get_response("[name:#getName#]#salutation#, \n#goodbye#"))

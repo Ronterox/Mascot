@@ -1,6 +1,6 @@
 import os
 import requests
-import bs4
+from bs4 import BeautifulSoup
 
 def fetch_news(query):
     url = f"https://www.google.com/search?q={query}&tbm=nws"
@@ -11,7 +11,7 @@ def fetch_news(query):
     s.cookies.update({"CONSENT": "YES+cb.20201218-17-p0.en+FX+999"})
 
     response = s.get(url)
-    soup = bs4.BeautifulSoup(response.text, "html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
 
     # find links with role heading
     titles = soup.find_all("div", {"role": "heading"})
@@ -19,6 +19,7 @@ def fetch_news(query):
     if not titles:
         open("soup.html", "w").write(soup.prettify())
         os.system("xdg-open soup.html")
+        os.remove("soup.html")
 
     news = []
     for title in titles:
@@ -27,5 +28,8 @@ def fetch_news(query):
     return news
 
 if __name__ == "__main__":
-    news = fetch_news("python")
-    print(news)
+    news = fetch_news("warner bros entrada parque")
+    for title, desc in news:
+        print(f"{title:-^100}")
+        print(desc)
+        print()

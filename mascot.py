@@ -1,3 +1,4 @@
+#!/home/rontero/Documents/Program-Files/miniconda3/bin/python3
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
@@ -7,12 +8,12 @@ from sticky import StickyNote
 from bubble import ChatBubbleWindow
 from rng import rng_range
 
-
 class MikuWindow(QMainWindow):
     SPD = 25
 
     def __init__(self, bubble):
         super().__init__()
+        self.labels = []
 
         self.news = fetch_news("video games")
         self.news_index = 0
@@ -24,75 +25,75 @@ class MikuWindow(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.can_move = True
-        self.mascot_label = self.create_label("Miku", self.show_label, True)
+        self.mascot_label = self.create_label("Miku", self.show_label, visible=True, addToLabels=False)
 
         self.mascot_image = QPixmap("mascot.png")
-        mheight, mwidth = self.mascot_image.height(), self.mascot_image.width()
+        mascotHeight, mascotWidth = self.mascot_image.height(), self.mascot_image.width()
 
         self.mascot_label.setPixmap(self.mascot_image)
-        self.mascot_label.setGeometry(0, 0, mwidth, mheight)
+        self.mascot_label.setGeometry(0, 0, mascotWidth, mascotHeight)
 
-        hello_label = self.create_label("Sticky Notes", self.open_notes)
-        quote_label = self.create_label("Quotes", self.open_quotes)
-        quote_label.move(0, 25)
-        news_label = self.create_label("News", self.open_news)
-        news_label.move(0, 50)
-
-        self.labels = [hello_label, quote_label, self.bubble.label, news_label]
+        self.create_label("Sticky Notes", self.open_notes)
+        self.create_label("Quotes", self.open_quotes)
+        self.create_label("News", self.open_news)
+        self.create_label("Introduction", self.introduction)
+        self.labels.append(self.bubble.label)
 
         self.WIDTH = QApplication.desktop().screenGeometry().width()
         self.HEIGHT = QApplication.desktop().screenGeometry().height()
 
-        self.setGeometry(0, 0, mwidth, mheight)
+        self.setGeometry(0, 0, mascotWidth, mascotHeight)
 
         self.move(self.WIDTH // 2, self.HEIGHT // 2)
         self.move_window()
 
         QTimer.singleShot(5000, self.idle_say)
+    
+    def introduction(self, _):
+        self.say_something(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
 
     def idle_say(self):
         self.open_quotes(None)
         QTimer.singleShot(25_000, self.idle_say)
 
-    def create_label(self, text, action, visible=False):
+    def create_label(self, text, action, visible=False, addToLabels=True):
         label = QLabel(text, self)
         label.setStyleSheet("QLabel {color: white;}")
         label.mousePressEvent = action
         label.enterEvent = self.toggle_move
         label.leaveEvent = self.toggle_move
         label.setVisible(visible)
+        if addToLabels:
+            label.move(0, 25 * len(self.labels))
+            self.labels.append(label)
         return label
 
-    def open_notes(self, _e):
+    def open_notes(self, _):
         StickyNote().mainloop()
-
-    def open_news(self, _e):
+    
+    def say_something(self, text):
         from voice import say_tts
+        self.bubble.change_text(text)
+        self.bubble.move(self.x() - self.bubble.label.width() //
+                         2, self.y() - self.bubble.label.height())
+        self.bubble.setVisible(True)
+        QTimer.singleShot(10000, self.bubble.hide)
+        say_tts(text)
+
+    def open_news(self, _):
         title, desc = self.news[self.news_index]
         saying = f"Today's news are {title}...{desc}"
         self.news_index = (self.news_index + 1) % len(self.news)
-        self.bubble.change_text(saying)
-        self.bubble.move(self.x() - self.bubble.label.width() //
-                         2, self.y() - self.bubble.label.height())
-        self.bubble.setVisible(True)
-        QTimer.singleShot(10000, self.bubble.hide)
-        say_tts(saying)
+        self.say_something(saying)
 
-    def open_quotes(self, _e):
-        from voice import say_tts
-        saying = get_response(f"[name: {self.name}]#origin#")
-        self.bubble.change_text(saying)
-        self.bubble.move(self.x() - self.bubble.label.width() //
-                         2, self.y() - self.bubble.label.height())
-        self.bubble.setVisible(True)
-        QTimer.singleShot(10000, self.bubble.hide)
-        say_tts(saying)
+    def open_quotes(self, _):
+        self.say_something(get_response(f"[name: {self.name}]#origin#"))
 
-    def show_label(self, _e):
+    def show_label(self, _):
         for lab in self.labels:
             lab.setVisible(not lab.isVisible())
 
-    def toggle_move(self, _e):
+    def toggle_move(self, _):
         self.can_move = not self.can_move
 
     def move_window(self):
