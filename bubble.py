@@ -1,14 +1,14 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+from outlinelabel import OutlineLabel
 
 
-class ChatBubbleLabel(QLabel):
+class ChatBubbleLabel(OutlineLabel):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
-        self.setFont(QFont("Arial", 14))
-        self.setAlignment(Qt.AlignCenter)
-        self.setStyleSheet("border-radius: 10px; padding: 10px; color: #FFFFFF;")
+        self.setFont(QFont("Arial", 34))
+        self.setOutlineThickness(1 / 8)
 
 
 class ChatBubbleWindow(QMainWindow):
@@ -27,9 +27,9 @@ class ChatBubbleWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-        
+
         self.change_text(text)
-    
+
     def change_text(self, text):
         self.label.setText("")
         if self.timer != None:
@@ -37,7 +37,7 @@ class ChatBubbleWindow(QMainWindow):
         self.text = text
         self.timer = self.startTimer(35)
         self.counter = 0
-        
+
     def timerEvent(self, _e):
         if self.counter < len(self.text):
             self.counter += 1
