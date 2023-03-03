@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
 from internet import fetch_news
+from outlinelabel import OutlineLabel
 from personality import get_response
 from sticky import StickyNote
 from bubble import ChatBubbleWindow
@@ -57,7 +58,7 @@ class MikuWindow(QMainWindow):
         QTimer.singleShot(25_000, self.idle_say)
 
     def create_label(self, text, action, visible=False, addToLabels=True):
-        label = QLabel(text, self)
+        label = OutlineLabel(text, self)
         label.setStyleSheet("QLabel {color: white;}")
         label.mousePressEvent = action
         label.enterEvent = self.toggle_move

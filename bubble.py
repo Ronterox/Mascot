@@ -16,8 +16,7 @@ class ChatBubbleWindow(QMainWindow):
         super().__init__()
 
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setWindowFlag(Qt.X11BypassWindowManagerHint)
 
         self.label = ChatBubbleLabel(text, self)
         self.timer = None
