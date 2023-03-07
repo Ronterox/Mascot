@@ -1,5 +1,7 @@
 import random
+import time
 
+random.seed(time.time())
 
 def rng_range(start, end=None):
     return random.randint(-start, start) if end is None else random.randint(start, end)

@@ -1,6 +1,6 @@
 #!/home/rontero/Documents/Program-Files/miniconda3/bin/python3
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from internet import fetch_news
 from outlinelabel import OutlineLabel
@@ -12,14 +12,21 @@ from rng import rng_range
 
 class MikuWindow(QMainWindow):
     SPD = 25
+
     isBeingDragged = False
+    canMove = True
+
+    labels = []
 
     def __init__(self, bubble):
         super().__init__()
-        self.labels = []
 
-        self.news = fetch_news("video games")
-        self.news_index = 0
+        from time import time
+        news_themes = ["video games", "politics", "sports", "science", "technology", "entertainment", "business", "health"]
+
+        self.news = fetch_news(news_themes[int(time() % len(news_themes))])
+        self.newsIndex = 0
+
         self.name = get_response("#getName.capitalize#")
         self.bubble = bubble
 
@@ -27,27 +34,26 @@ class MikuWindow(QMainWindow):
         self.setWindowFlag(Qt.X11BypassWindowManagerHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.can_move = True
-        self.mascot_label = self.create_label("Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
-        self.mascot_label.mouseReleaseEvent = self.mouseReleaseEvent
+        self.mascotLabel = self.create_label("Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
+        self.mascotLabel.mouseReleaseEvent = self.mouseReleaseEvent
 
-        self.mascot_image = QPixmap("mascot.png")
-        mascotHeight, mascotWidth = self.mascot_image.height(), self.mascot_image.width()
+        self.mascotImage = QPixmap("mascot.png")
+        mascotHeight, mascotWidth = self.mascotImage.height(), self.mascotImage.width()
 
-        self.mascot_label.setPixmap(self.mascot_image)
-        self.mascot_label.setGeometry(0, 0, mascotWidth, mascotHeight)
+        self.mascotLabel.setPixmap(self.mascotImage)
+        self.mascotLabel.setGeometry(0, 0, mascotWidth, mascotHeight)
 
         self.create_label("Sticky Notes", self.open_notes)
         self.create_label("Quotes", self.open_quotes)
         self.create_label("News", self.open_news)
         self.create_label("Introduction", self.introduction)
+        self.create_label("Coin Flip", self.flip_coin)
         self.labels.append(self.bubble.label)
 
         self.WIDTH = QApplication.desktop().screenGeometry().width()
         self.HEIGHT = QApplication.desktop().screenGeometry().height()
 
         self.setGeometry(0, 0, mascotWidth, mascotHeight)
-
         self.move(self.WIDTH // 2, self.HEIGHT // 2)
         self.move_window()
 
@@ -59,14 +65,21 @@ class MikuWindow(QMainWindow):
     def idle_say(self):
         self.open_quotes(None)
         QTimer.singleShot(45_000, self.idle_say)
+    
+    def flip_coin(self, _):
+        self.say_something("Do it pussy" if rng_range(0, 1) == 0 else "Don't")
 
     def create_label(self, text, action, visible=False, addToLabels=True, clickType=Qt.LeftButton):
         label = OutlineLabel(text, self)
-        label.setStyleSheet("QLabel {color: white;}")
+        label.setFont(QFont("Arial", 15))
+        label.setBrush(Qt.yellow)
 
         def action_wrapper(event):
             if event.button() & clickType:
                 action(event)
+
+        label.enterEvent = lambda _: label.setFont(QFont("Arial", 18))
+        label.leaveEvent = lambda _: label.setFont(QFont("Arial", 15))
 
         label.mousePressEvent = action_wrapper
         label.setVisible(visible)
@@ -88,9 +101,9 @@ class MikuWindow(QMainWindow):
         say_tts(text)
 
     def open_news(self, _):
-        title, desc = self.news[self.news_index]
+        title, desc = self.news[self.newsIndex]
         saying = f"Today's news are {title}...{desc}"
-        self.news_index = (self.news_index + 1) % len(self.news)
+        self.newsIndex = (self.newsIndex + 1) % len(self.news)
         self.say_something(saying)
 
     def open_quotes(self, _):
@@ -99,7 +112,7 @@ class MikuWindow(QMainWindow):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isBeingDragged = True
-            self.can_move = False
+            self.canMove = False
             if rng_range(0, 100) < 5:
                 self.say_something(get_response(f"[name: {self.name}]#origin#"))
         else:
@@ -112,17 +125,17 @@ class MikuWindow(QMainWindow):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isBeingDragged = False
-            self.can_move = True
+            self.canMove = True
 
     def toggle_labels(self, _):
-        self.can_move = not self.can_move
+        self.canMove = not self.canMove
         for lab in self.labels:
             lab.setVisible(not lab.isVisible())
 
     def move_window(self):
         QTimer.singleShot(100, self.move_window)
 
-        if not self.can_move:
+        if not self.canMove:
             return
 
         x, y = self.x() + rng_range(self.SPD), self.y() + rng_range(self.SPD)
