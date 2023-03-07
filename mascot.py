@@ -77,6 +77,8 @@ class MikuWindow(QMainWindow):
         def action_wrapper(event):
             if event.button() & clickType:
                 action(event)
+                if clickType == Qt.LeftButton:
+                    self.toggle_labels(event)
 
         label.enterEvent = lambda _: label.setFont(QFont("Arial", 18))
         label.leaveEvent = lambda _: label.setFont(QFont("Arial", 15))
