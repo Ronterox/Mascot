@@ -1,7 +1,7 @@
 #!/home/rontero/Documents/Program-Files/miniconda3/bin/python3
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from internet import fetch_news
 from outlinelabel import OutlineLabel
 from personality import get_response
@@ -9,8 +9,10 @@ from sticky import StickyNote
 from bubble import ChatBubbleWindow
 from rng import rng_range
 
+
 class MikuWindow(QMainWindow):
     SPD = 25
+    isBeingDragged = False
 
     def __init__(self, bubble):
         super().__init__()
@@ -26,7 +28,8 @@ class MikuWindow(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.can_move = True
-        self.mascot_label = self.create_label("Miku", self.show_label, visible=True, addToLabels=False)
+        self.mascot_label = self.create_label("Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
+        self.mascot_label.mouseReleaseEvent = self.mouseReleaseEvent
 
         self.mascot_image = QPixmap("mascot.png")
         mascotHeight, mascotWidth = self.mascot_image.height(), self.mascot_image.width()
@@ -49,21 +52,25 @@ class MikuWindow(QMainWindow):
         self.move_window()
 
         QTimer.singleShot(5000, self.idle_say)
-    
+
     def introduction(self, _):
         self.say_something(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
 
     def idle_say(self):
         self.open_quotes(None)
-        QTimer.singleShot(25_000, self.idle_say)
+        QTimer.singleShot(45_000, self.idle_say)
 
-    def create_label(self, text, action, visible=False, addToLabels=True):
+    def create_label(self, text, action, visible=False, addToLabels=True, clickType=Qt.LeftButton):
         label = OutlineLabel(text, self)
         label.setStyleSheet("QLabel {color: white;}")
-        label.mousePressEvent = action
-        label.enterEvent = self.toggle_move
-        label.leaveEvent = self.toggle_move
+
+        def action_wrapper(event):
+            if event.button() & clickType:
+                action(event)
+
+        label.mousePressEvent = action_wrapper
         label.setVisible(visible)
+
         if addToLabels:
             label.move(0, 25 * len(self.labels))
             self.labels.append(label)
@@ -71,12 +78,11 @@ class MikuWindow(QMainWindow):
 
     def open_notes(self, _):
         StickyNote().mainloop()
-    
+
     def say_something(self, text):
         from voice import say_tts
         self.bubble.change_text(text)
-        self.bubble.move(self.x() - self.bubble.label.width() //
-                         2, self.y() - self.bubble.label.height())
+        self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
         QTimer.singleShot(10000, self.bubble.hide)
         say_tts(text)
@@ -89,13 +95,29 @@ class MikuWindow(QMainWindow):
 
     def open_quotes(self, _):
         self.say_something(get_response(f"[name: {self.name}]#origin#"))
+    
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.isBeingDragged = True
+            self.can_move = False
+            if rng_range(0, 100) < 5:
+                self.say_something(get_response(f"[name: {self.name}]#origin#"))
+        else:
+            self.toggle_labels(event)
+    
+    def mouseMoveEvent(self, event):
+        if self.isBeingDragged:
+            self.move(event.globalX() - self.width() // 2, event.globalY() - self.height() // 2)
+    
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.isBeingDragged = False
+            self.can_move = True
 
-    def show_label(self, _):
+    def toggle_labels(self, _):
+        self.can_move = not self.can_move
         for lab in self.labels:
             lab.setVisible(not lab.isVisible())
-
-    def toggle_move(self, _):
-        self.can_move = not self.can_move
 
     def move_window(self):
         QTimer.singleShot(100, self.move_window)
