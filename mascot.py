@@ -44,7 +44,7 @@ class MikuWindow(QMainWindow):
         self.mascotLabel.setGeometry(0, 0, mascotWidth, mascotHeight)
 
         self.create_label("Sticky Notes", self.open_notes)
-        self.create_label("Quotes", self.open_quotes)
+        self.create_label("Quotes", self.say_quote)
         self.create_label("News", self.open_news)
         self.create_label("Introduction", self.introduction)
         self.create_label("Coin Flip", self.flip_coin)
@@ -63,7 +63,7 @@ class MikuWindow(QMainWindow):
         self.say_something(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
 
     def idle_say(self):
-        self.open_quotes(None)
+        self.say_quote(None)
         QTimer.singleShot(45_000, self.idle_say)
     
     def flip_coin(self, _):
@@ -108,7 +108,7 @@ class MikuWindow(QMainWindow):
         self.newsIndex = (self.newsIndex + 1) % len(self.news)
         self.say_something(saying)
 
-    def open_quotes(self, _):
+    def say_quote(self, _):
         self.say_something(get_response(f"[name: {self.name}]#origin#"))
     
     def mousePressEvent(self, event):
@@ -116,7 +116,7 @@ class MikuWindow(QMainWindow):
             self.isBeingDragged = True
             self.canMove = False
             if rng_range(0, 100) < 5:
-                self.say_something(get_response(f"[name: {self.name}]#origin#"))
+                self.say_quote(event)
         else:
             self.toggle_labels(event)
     
