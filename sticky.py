@@ -21,12 +21,26 @@ class StickyNote(tk.Tk):
     def new_note(self):
         note = tk.Toplevel(self)
         note.overrideredirect(True)
-        note.geometry(f"+{rng_range(0, self.winfo_screenwidth())}+{rng_range(0, self.winfo_screenheight())}")
-        closeButton = tk.Button(note, text="Close", command=lambda: self.remove_note(note))
-        closeButton.pack()
+
+        titleBar = tk.Frame(note, bg="dark cyan", relief="raised", bd=2)
+        titleBar.pack(side="top", fill="x")
+
+        closeButton = tk.Button(titleBar, text="x", bg='dark gray', command=lambda: self.remove_note(note))
+        closeButton.pack(side="right")
+
         text = tk.Text(note, height=10, width=40, font="Arial 12")
         text.pack()
+        
+        def on_drag_motion(event):
+            x = note.winfo_x() + (event.x - note.getvar("x"))
+            y = note.winfo_y() + (event.y - note.getvar("y"))
+            print(event.x, event.y)
+            note.geometry(f"+{x}+{y}")
+
+        titleBar.bind("<ButtonPress-1>", lambda e: note.setvar("x", e.x) or note.setvar("y", e.y))
+        titleBar.bind("<B1-Motion>", on_drag_motion)
         note.bind("<Destroy>", lambda _: self.remove_note(note))
+        note.geometry(f"+{rng_range(0, self.winfo_screenwidth())}+{rng_range(0, self.winfo_screenheight())}")
         self.notes.append((note, text))
         return self.notes[-1]
 
@@ -37,9 +51,9 @@ class StickyNote(tk.Tk):
     def save_notes(self):
         notes = []
         for note, text in self.notes:
-            notes.append({"content": text.get("1.0", tk.END).rstrip(), "size_and_pos": note.geometry()})
+            notes.append({"content": text.get(
+                "1.0", tk.END).rstrip(), "size_and_pos": note.geometry()})
         json.dump(notes, open("notes.json", "w"), indent=4)
-
 
     def load_notes(self):
         try:

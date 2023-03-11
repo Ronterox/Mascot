@@ -9,6 +9,7 @@ from sticky import StickyNote
 from bubble import ChatBubbleWindow
 from rng import rng_range
 
+CONCENTRATION_MODE = 1
 
 class MikuWindow(QMainWindow):
     SPD = 25
@@ -95,12 +96,13 @@ class MikuWindow(QMainWindow):
         StickyNote().mainloop()
 
     def say_something(self, text):
-        from voice import say_tts
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
+        if not CONCENTRATION_MODE:
+            from voice import say_tts
+            say_tts(text)
         QTimer.singleShot(10000, self.bubble.hide)
-        say_tts(text)
 
     def open_news(self, _):
         title, desc = self.news[self.newsIndex]
