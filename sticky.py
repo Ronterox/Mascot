@@ -3,9 +3,7 @@ from rng import rng_range
 import json
 
 
-class StickyNote(tk.Tk):
-    notes = []
-
+class StickyNotes(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Sticky Note")
@@ -34,7 +32,6 @@ class StickyNote(tk.Tk):
         def on_drag_motion(event):
             x = note.winfo_x() + (event.x - note.getvar("x"))
             y = note.winfo_y() + (event.y - note.getvar("y"))
-            print(event.x, event.y)
             note.geometry(f"+{x}+{y}")
 
         titleBar.bind("<ButtonPress-1>", lambda e: note.setvar("x", e.x) or note.setvar("y", e.y))
@@ -51,11 +48,11 @@ class StickyNote(tk.Tk):
     def save_notes(self):
         notes = []
         for note, text in self.notes:
-            notes.append({"content": text.get(
-                "1.0", tk.END).rstrip(), "size_and_pos": note.geometry()})
+            notes.append({"content": text.get("1.0", tk.END).rstrip(), "size_and_pos": note.geometry()})
         json.dump(notes, open("notes.json", "w"), indent=4)
 
     def load_notes(self):
+        self.notes = []
         try:
             for data in json.load(open("notes.json")):
                 note, text = self.new_note()
@@ -66,5 +63,5 @@ class StickyNote(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = StickyNote()
+    app = StickyNotes()
     app.mainloop()

@@ -5,11 +5,19 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from internet import fetch_news
 from outlinelabel import OutlineLabel
 from personality import get_response
-from sticky import StickyNote
+from sticky import StickyNotes
 from bubble import ChatBubbleWindow
 from rng import rng_range
+from time import time
+from enum import Enum
+from sys import argv
 
-CONCENTRATION_MODE = 1
+class Modes(Enum):
+    NORMAL = 0
+    SILENT = 1
+    TALK = 2
+
+MODE = argv[1] if len(argv) > 1 else Modes.NORMAL
 
 class MikuWindow(QMainWindow):
     SPD = 25
@@ -22,7 +30,6 @@ class MikuWindow(QMainWindow):
     def __init__(self, bubble):
         super().__init__()
 
-        from time import time
         news_themes = ["video games", "politics", "sports", "science", "technology", "entertainment", "business", "health"]
 
         self.news = fetch_news(news_themes[int(time() % len(news_themes))])
@@ -93,13 +100,13 @@ class MikuWindow(QMainWindow):
         return label
 
     def open_notes(self, _):
-        StickyNote().mainloop()
+        StickyNotes().mainloop()
 
     def say_something(self, text):
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
-        if not CONCENTRATION_MODE:
+        if MODE & (Modes.TALK | Modes.NORMAL):
             from voice import say_tts
             say_tts(text)
         QTimer.singleShot(10000, self.bubble.hide)
