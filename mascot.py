@@ -9,15 +9,12 @@ from sticky import StickyNotes
 from bubble import ChatBubbleWindow
 from rng import rng_range
 from time import time
-from enum import Enum
-from sys import argv
+from enum import IntEnum
 
-class Modes(Enum):
-    NORMAL = 0
-    SILENT = 1
-    TALK = 2
-
-MODE = argv[1] if len(argv) > 1 else Modes.NORMAL
+class Modes(IntEnum):
+    NORMAL = 1
+    SILENT = 2
+    TALK = 4
 
 class MikuWindow(QMainWindow):
     SPD = 25
@@ -27,8 +24,10 @@ class MikuWindow(QMainWindow):
 
     labels = []
 
-    def __init__(self, bubble):
+    def __init__(self, mode: Modes = Modes.NORMAL):
         super().__init__()
+        self.mode = mode
+        self.bubble = ChatBubbleWindow("")
 
         news_themes = ["video games", "politics", "sports", "science", "technology", "entertainment", "business", "health"]
 
@@ -36,7 +35,6 @@ class MikuWindow(QMainWindow):
         self.newsIndex = 0
 
         self.name = get_response("#getName.capitalize#")
-        self.bubble = bubble
 
         # Tell window manager to ignore this window
         self.setWindowFlag(Qt.X11BypassWindowManagerHint)
@@ -56,7 +54,6 @@ class MikuWindow(QMainWindow):
         self.create_label("News", self.open_news)
         self.create_label("Introduction", self.introduction)
         self.create_label("Coin Flip", self.flip_coin)
-        self.labels.append(self.bubble.label)
 
         self.WIDTH = QApplication.desktop().screenGeometry().width()
         self.HEIGHT = QApplication.desktop().screenGeometry().height()
@@ -106,7 +103,7 @@ class MikuWindow(QMainWindow):
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
-        if MODE & (Modes.TALK | Modes.NORMAL):
+        if self.mode & (Modes.TALK | Modes.NORMAL):
             from voice import say_tts
             say_tts(text)
         QTimer.singleShot(10000, self.bubble.hide)
@@ -163,9 +160,13 @@ class MikuWindow(QMainWindow):
 
         self.move(x, y)
 
-
 if __name__ == "__main__":
+    from sys import argv
+    MODE = argv[1] if len(argv) > 1 else Modes.NORMAL
+    print(f"Running in {Modes(MODE).name} mode")
+
     app = QApplication([])
-    win = MikuWindow(ChatBubbleWindow(""))
+    win = MikuWindow(MODE)
+
     win.show()
     app.exec_()
