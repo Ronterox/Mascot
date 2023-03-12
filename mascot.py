@@ -50,10 +50,10 @@ class MikuWindow(QMainWindow):
         self.mascotLabel.setGeometry(0, 0, mascotWidth, mascotHeight)
 
         self.create_label("Sticky Notes", self.open_notes)
-        self.create_label("Quotes", self.say_quote)
+        self.create_label("Speak", self.speak)
         self.create_label("News", self.open_news)
-        self.create_label("Introduction", self.introduction)
         self.create_label("Coin Flip", self.flip_coin)
+        self.create_label(Modes(mode).name, self.change_mode)
 
         self.WIDTH = QApplication.desktop().screenGeometry().width()
         self.HEIGHT = QApplication.desktop().screenGeometry().height()
@@ -62,17 +62,28 @@ class MikuWindow(QMainWindow):
         self.move(self.WIDTH // 2, self.HEIGHT // 2)
         self.move_window()
 
+        QTimer.singleShot(5000, self.introduction)
+
+    def change_mode(self, _):
+        self.mode = Modes(self.mode * 2 % 2 ** len(Modes) or 1)
+        self.labels[-1].setText(Modes(self.mode).name)
+        if self.mode == Modes.SILENT:
+            self.bubble.hide()
+        elif self.mode == Modes.TALK:
+            self.say("Hello")
+        elif self.mode == Modes.NORMAL:
+            self.introduction()
+
+    def introduction(self):
+        self.say(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
         QTimer.singleShot(5000, self.idle_say)
 
-    def introduction(self, _):
-        self.say_something(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
-
     def idle_say(self):
-        self.say_quote(None)
+        self.speak(None)
         QTimer.singleShot(45_000, self.idle_say)
     
     def flip_coin(self, _):
-        self.say_something("Do it pussy" if rng_range(0, 1) == 0 else "Don't")
+        self.say("Heads" if rng_range(0, 1) == 0 else "Tails")
 
     def create_label(self, text, action, visible=False, addToLabels=True, clickType=Qt.LeftButton):
         label = OutlineLabel(text, self)
@@ -99,7 +110,7 @@ class MikuWindow(QMainWindow):
     def open_notes(self, _):
         StickyNotes().mainloop()
 
-    def say_something(self, text):
+    def say(self, text):
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
@@ -112,17 +123,17 @@ class MikuWindow(QMainWindow):
         title, desc = self.news[self.newsIndex]
         saying = f"Today's news are {title}...{desc}"
         self.newsIndex = (self.newsIndex + 1) % len(self.news)
-        self.say_something(saying)
+        self.say(saying)
 
-    def say_quote(self, _):
-        self.say_something(get_response(f"[name: {self.name}]#origin#"))
+    def speak(self, _):
+        self.say(get_response(f"[name: {self.name}]#origin#"))
     
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isBeingDragged = True
             self.canMove = False
             if rng_range(0, 100) < 5:
-                self.say_quote(event)
+                self.speak(event)
         else:
             self.toggle_labels(event)
     
