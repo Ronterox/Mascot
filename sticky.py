@@ -44,11 +44,14 @@ class StickyNotes(tk.Tk):
     def remove_note(self, note):
         note.destroy()
         self.notes = [n for n in self.notes if n[0] != note]
+    
+    def get_text(self, text: tk.Text):
+        return text.get("1.0", tk.END).rstrip()
 
     def save_notes(self):
         notes = []
         for note, text in self.notes:
-            notes.append({"content": text.get("1.0", tk.END).rstrip(), "size_and_pos": note.geometry()})
+            notes.append({"content": self.get_text(text), "size_and_pos": note.geometry()})
         json.dump(notes, open("notes.json", "w"), indent=4)
 
     def load_notes(self):

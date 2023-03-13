@@ -23,10 +23,11 @@ class ChatBubbleWindow(QMainWindow):
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
+
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-
+        
         self.change_text(text)
 
     def change_text(self, text):
@@ -37,7 +38,7 @@ class ChatBubbleWindow(QMainWindow):
         self.timer = self.startTimer(35)
         self.counter = 0
 
-    def timerEvent(self, _e):
+    def timerEvent(self, _):
         if self.counter < len(self.text):
             self.counter += 1
             self.label.setText(self.text[:self.counter])
@@ -48,6 +49,6 @@ class ChatBubbleWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    win = ChatBubbleWindow("Words words words")
+    win = ChatBubbleWindow("This is a long text that will be displayed.\nAnd this is a second line.")
     win.show()
     app.exec_()

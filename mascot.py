@@ -7,8 +7,7 @@ from outlinelabel import OutlineLabel
 from personality import get_response
 from sticky import StickyNotes
 from bubble import ChatBubbleWindow
-from rng import rng_range
-from time import time
+from rng import rng_range, rng_choice
 from enum import IntEnum
 
 class Modes(IntEnum):
@@ -23,6 +22,7 @@ class MikuWindow(QMainWindow):
     canMove = True
 
     labels = []
+    noteapp = StickyNotes()
 
     def __init__(self, mode: Modes = Modes.NORMAL):
         super().__init__()
@@ -31,7 +31,7 @@ class MikuWindow(QMainWindow):
 
         news_themes = ["video games", "politics", "sports", "science", "technology", "entertainment", "business", "health"]
 
-        self.news = fetch_news(news_themes[int(time() % len(news_themes))])
+        self.news = fetch_news(rng_choice(news_themes))
         self.newsIndex = 0
 
         self.name = get_response("#getName.capitalize#")
@@ -108,7 +108,8 @@ class MikuWindow(QMainWindow):
         return label
 
     def open_notes(self, _):
-        StickyNotes().mainloop()
+        self.noteapp.mainloop()
+        self.noteapp = StickyNotes()
 
     def say(self, text):
         self.bubble.change_text(text)
@@ -121,12 +122,16 @@ class MikuWindow(QMainWindow):
 
     def open_news(self, _):
         title, desc = self.news[self.newsIndex]
-        saying = f"Today's news are {title}...{desc}"
         self.newsIndex = (self.newsIndex + 1) % len(self.news)
-        self.say(saying)
+        self.say(f"Today's news are {title}...{desc}")
 
     def speak(self, _):
-        self.say(get_response(f"[name: {self.name}]#origin#"))
+        if rng_range(0, 100) < 25:
+            _, tkText = rng_choice(self.noteapp.notes)
+            text = "Remember " + self.noteapp.get_text(tkText)
+        else:
+            text = get_response(f"[name: {self.name}]#origin#")
+        self.say(text)
     
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -173,9 +178,15 @@ class MikuWindow(QMainWindow):
 
 if __name__ == "__main__":
     from sys import argv
-    MODE = argv[1] if len(argv) > 1 else Modes.NORMAL
-    print(f"Running in {Modes(MODE).name} mode")
 
+    try:
+        MODE = 2 ** (int(argv[1]) - 1) if len(argv) > 1 else Modes.NORMAL
+    except ValueError:
+        print("\nTry: python mascot.py <mode>")
+        print("\nModes:\n1: Normal\n2: Silent\n3: Talk\n")
+        exit(1)
+
+    print(f"Running in {Modes(MODE).name} mode")
     app = QApplication([])
     win = MikuWindow(MODE)
 

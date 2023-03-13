@@ -9,11 +9,11 @@ from math import ceil
 class OutlineLabel(QLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.w = 1 / 25
+        self.thickness = 1 / 25
         self.mode = True
         self.setBrush(Qt.white)
         self.setPen(Qt.black)
-
+    
     def scaledOutlineMode(self):
         return self.mode
 
@@ -21,10 +21,10 @@ class OutlineLabel(QLabel):
         self.mode = state
 
     def outlineThickness(self):
-        return self.w * self.font().pointSize() if self.mode else self.w
+        return self.thickness * self.font().pointSize() if self.mode else self.thickness
 
     def setOutlineThickness(self, value):
-        self.w = value
+        self.thickness = value
 
     def setBrush(self, brush):
         if not isinstance(brush, QBrush):
@@ -38,49 +38,48 @@ class OutlineLabel(QLabel):
         self.pen = pen
 
     def sizeHint(self):
-        w = ceil(self.outlineThickness() * 2)
-        return super().sizeHint() + QSize(w, w)
+        width = ceil(self.outlineThickness() * 2)
+        return super().sizeHint() + QSize(width, width)
 
     def minimumSizeHint(self):
-        w = ceil(self.outlineThickness() * 2)
-        return super().minimumSizeHint() + QSize(w, w)
+        width = ceil(self.outlineThickness() * 2)
+        return super().minimumSizeHint() + QSize(width, width)
 
     def paintEvent(self, event):
         if self.text() == '':
             return super().paintEvent(event)
-        w = int(self.outlineThickness())
+        width = int(self.outlineThickness())
         rect = self.rect()
         metrics = QFontMetrics(self.font())
-        tr = metrics.boundingRect(self.text()).adjusted(0, 0, w, w)
+        tr = metrics.boundingRect(self.text()).adjusted(0, 0, width, width)
         if self.indent() == -1:
-            if self.frameWidth():
-                indent = (metrics.boundingRect('x').width() + w * 2) / 2
-            else:
-                indent = w
+            indent = (metrics.boundingRect('x').width() + width * 2) / 2 if self.frameWidth() else width
         else:
             indent = self.indent()
 
-        if self.alignment() & Qt.AlignLeft:
-            x = rect.left() + indent - \
-                min(metrics.leftBearing(self.text()[0]), 0)
-        elif self.alignment() & Qt.AlignRight:
+        alignment = self.alignment()
+        if alignment & Qt.AlignLeft:
+            x = rect.left() + indent - min(metrics.leftBearing(self.text()[0]), 0)
+        elif alignment & Qt.AlignRight:
             x = rect.x() + rect.width() - indent - tr.width()
         else:
             x = (rect.width() - tr.width()) / 2
 
-        if self.alignment() & Qt.AlignTop:
+        if alignment & Qt.AlignTop:
             y = rect.top() + indent + metrics.ascent()
-        elif self.alignment() & Qt.AlignBottom:
+        elif alignment & Qt.AlignBottom:
             y = rect.y() + rect.height() - indent - metrics.descent()
         else:
             y = (rect.height() + metrics.ascent() - metrics.descent()) / 2
 
         path = QPainterPath()
-        path.addText(x, y, self.font(), self.text())
+        font, height = self.font(), metrics.height()
+        for i, line in enumerate(self.text().splitlines()):
+            path.addText(x, int(y + (i * height) * 0.9), font, line)
         qp = QPainter(self)
         qp.setRenderHint(QPainter.Antialiasing)
 
-        self.pen.setWidthF(w * 2)
+        self.pen.setWidthF(width * 2)
         qp.strokePath(path, self.pen)
         if 1 < self.brush.style() < 15:
             qp.fillPath(path, self.palette().window())
