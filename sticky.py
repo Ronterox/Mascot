@@ -28,12 +28,25 @@ class StickyNotes(tk.Tk):
 
         def copy_text():
             if not text.tag_ranges("sel"):
-                text.tag_add("sel", "1.0", "end")
+                return
             selected_text = text.get("sel.first", "sel.last")
             self.clipboard_clear()
             self.clipboard_append(selected_text)
+
+        def copy_all_text():
+            if not text.tag_ranges("sel"):
+                text.tag_add("sel", "1.0", "end")
+            copy_text()
         
-        copyButton = tk.Button(titleBar, text="Copy", bg='dark gray', command=copy_text)
+        def cut_text():
+            copy_text()
+            text.delete("sel.first", "sel.last")
+        
+        note.bind("<Control-c>", lambda _: copy_text())
+        note.bind("<Control-a>", lambda _: text.tag_add("sel", "1.0", "end"))
+        note.bind("<Control-x>", lambda _: cut_text())
+        
+        copyButton = tk.Button(titleBar, text="Copy", bg='dark gray', command=copy_all_text)
         copyButton.pack(side="right")
 
         text = tk.Text(note, height=10, width=40, font="Arial 12")
