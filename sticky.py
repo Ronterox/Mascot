@@ -26,6 +26,16 @@ class StickyNotes(tk.Tk):
         closeButton = tk.Button(titleBar, text="x", bg='dark gray', command=lambda: self.remove_note(note))
         closeButton.pack(side="right")
 
+        def copy_text():
+            if not text.tag_ranges("sel"):
+                text.tag_add("sel", "1.0", "end")
+            selected_text = text.get("sel.first", "sel.last")
+            self.clipboard_clear()
+            self.clipboard_append(selected_text)
+        
+        copyButton = tk.Button(titleBar, text="Copy", bg='dark gray', command=copy_text)
+        copyButton.pack(side="right")
+
         text = tk.Text(note, height=10, width=40, font="Arial 12")
         text.pack()
         
