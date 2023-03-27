@@ -126,7 +126,7 @@ class MikuWindow(QMainWindow):
         self.say(f"Today's news are {title}...{desc}")
 
     def speak(self, _):
-        if rng_range(0, 100) < 25:
+        if rng_range(0, 100) < 25 and len(self.noteapp.notes):
             _, tkText = rng_choice(self.noteapp.notes)
             text = "Remember " + self.noteapp.get_text(tkText)
         else:
