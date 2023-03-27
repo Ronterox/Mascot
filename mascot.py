@@ -8,6 +8,7 @@ from personality import get_response
 from sticky import StickyNotes
 from bubble import ChatBubbleWindow
 from rng import rng_range, rng_choice
+from gpt3miko import predict_gpt3
 from enum import IntEnum
 
 class Modes(IntEnum):
@@ -112,6 +113,10 @@ class MikuWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
+        prediction = predict_gpt3(text)
+        text = ""
+        for line in prediction.splitlines():
+            text += line + "\n"
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)

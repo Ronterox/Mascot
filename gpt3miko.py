@@ -13,8 +13,9 @@ LOCAL_STORAGE_TOKEN ={ '@@auth0spajs@@::DRivsnm2Mu42T3KOpqdtwB3NYviHYzwD::https:
 
 # -------------------- Options --------------------
 
-HEADLESS = True
+HEADLESS = False
 REQUEST_REFRESH_LIMIT = 3
+SECS_PER_REFRESH = 1
 
 # -------------------------------------------------
 
@@ -46,7 +47,7 @@ def predict_gpt3(input):
     except:
         textbox.click()
     textbox.send_keys(Keys.CONTROL + "a")
-    textbox.send_keys(input)
+    textbox.send_keys(input.strip())
 
     # Submit
     oldInput = textbox.text
@@ -55,20 +56,20 @@ def predict_gpt3(input):
     # Wait prediction
     refreshCount = 0
     while refreshCount < REQUEST_REFRESH_LIMIT:
+        sleep(SECS_PER_REFRESH)
         if oldInput != textbox.text:
             refreshCount = 0
             oldInput = textbox.text
         refreshCount += 1
-        sleep(1)
-    
-    prediction = ""
-    for line in textbox.text.split("\n"):
-        if line.startswith(input):
-            continue
-        prediction += line + "\n"
-    print(prediction.strip())
+
+    return textbox.text.strip()
 
 if __name__ == "__main__":
     while True:
-        predict_gpt3(input("Ask me something: "))
-    driver.close()
+        try:
+            prediction = predict_gpt3(input("Ask me something: "))
+            print(prediction)
+        except KeyboardInterrupt:
+            print("Exiting...")
+            driver.quit()
+            break
