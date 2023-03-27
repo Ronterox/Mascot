@@ -60,12 +60,15 @@ def predict_gpt3(input):
             oldInput = textbox.text
         refreshCount += 1
         sleep(1)
-
-    predictions = driver.find_elements(By.CSS_SELECTOR, 'span[style="background-color: var(--green-100);"]')
-    for prediction in predictions:
-        print(prediction.text, end=" ")
-    print()
+    
+    prediction = ""
+    for line in textbox.text.split("\n"):
+        if line.startswith(input):
+            continue
+        prediction += line + "\n"
+    print(prediction.strip())
 
 if __name__ == "__main__":
-    predict_gpt3(input("Ask me something: "))
+    while True:
+        predict_gpt3(input("Ask me something: "))
     driver.close()
