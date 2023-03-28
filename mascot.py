@@ -16,7 +16,7 @@ class Modes(IntEnum):
     SILENT = 2
     TALK = 4
 
-class MikuWindow(QMainWindow):
+class MikoWindow(QMainWindow):
     SPD = 25
 
     isBeingDragged = False
@@ -113,10 +113,7 @@ class MikuWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        prediction = predict_gpt3(text)
-        text = ""
-        for line in prediction.splitlines():
-            text += line + "\n"
+        text = predict_gpt3(text)
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
@@ -193,7 +190,7 @@ if __name__ == "__main__":
 
     print(f"Running in {Modes(MODE).name} mode")
     app = QApplication([])
-    win = MikuWindow(MODE)
+    win = MikoWindow(MODE)
 
     win.show()
     app.exec_()
