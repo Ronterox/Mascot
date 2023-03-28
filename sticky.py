@@ -1,7 +1,8 @@
 import tkinter as tk
-from rng import rng_range
+from rng import rng_range, rng_choice
 import json
 
+BG_COLORS = ["dark cyan", "cyan", "dark blue", "blue", "dark green", "green", "yellow", "dark orange", "orange", "dark red", "red", "dark magenta", "magenta", "dark violet", "violet", "dark gray", "gray", "black"]
 
 class StickyNotes(tk.Tk):
     def __init__(self):
@@ -20,7 +21,7 @@ class StickyNotes(tk.Tk):
         note = tk.Toplevel(self)
         note.overrideredirect(True)
 
-        titleBar = tk.Frame(note, bg="dark cyan", relief="raised", bd=2)
+        titleBar = tk.Frame(note, bg=rng_choice(BG_COLORS), relief="raised", bd=2)
         titleBar.pack(side="top", fill="x")
 
         closeButton = tk.Button(titleBar, text="x", bg='dark gray', command=lambda: self.remove_note(note))
