@@ -4,12 +4,11 @@ from PyQt5.QtGui import QFont
 from outlinelabel import OutlineLabel
 
 
-class ChatBubbleLabel(QLabel):
+class ChatBubbleLabel(OutlineLabel):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
         self.setFont(QFont("Arial", 21))
-        self.setStyleSheet("color: white;")
-        # self.setOutlineThickness(1 / 8)
+        self.setOutlineThickness(1 / 8)
 
 
 class ChatBubbleWindow(QMainWindow):
@@ -50,6 +49,9 @@ class ChatBubbleWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    win = ChatBubbleWindow("This is a long text that will be displayed.\nAnd this is a second line.")
+    lines = "This is a long text check just in case"
+    for i in range(2, 10):
+       lines += f"\nThis is the {i} line of the text" 
+    win = ChatBubbleWindow(lines)
     win.show()
     app.exec_()
