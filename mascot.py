@@ -8,7 +8,7 @@ from personality import get_response
 from sticky import StickyNotes
 from bubble import ChatBubbleWindow
 from rng import rng_range, rng_choice
-from gpt3miko import predict_gpt3
+from gpt3mikoapi import predict, Model
 from enum import IntEnum
 
 class Modes(IntEnum):
@@ -77,7 +77,7 @@ class MikoWindow(QMainWindow):
 
     def introduction(self):
         self.say(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
-        QTimer.singleShot(5000, self.idle_say)
+        QTimer.singleShot(10_000, self.idle_say)
 
     def idle_say(self):
         self.speak(None)
@@ -113,7 +113,7 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        text = predict_gpt3(text)
+        text = predict(text, Model.DAVINCI)
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)

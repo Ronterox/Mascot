@@ -40,7 +40,7 @@ driver.get(URL)
 driver.execute_script(script)
 driver.refresh()
 
-def predict_gpt3(input):
+def predict(input):
     textbox = driver.find_element(By.CSS_SELECTOR, 'div[role="textbox"]')
     try:
         textbox.click()
@@ -66,7 +66,7 @@ def predict_gpt3(input):
 if __name__ == "__main__":
     while True:
         try:
-            prediction = predict_gpt3(input("Ask me something: "))
+            prediction = predict(input("Ask me something: "))
             print(prediction)
         except KeyboardInterrupt:
             print("Exiting...")
