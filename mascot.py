@@ -10,6 +10,7 @@ from bubble import ChatBubbleWindow
 from rng import rng_range, rng_choice
 from gpt3mikoapi import predict, Model
 from enum import IntEnum
+import re
 
 class Modes(IntEnum):
     NORMAL = 1
@@ -30,7 +31,8 @@ class MikoWindow(QMainWindow):
         self.mode = mode
         self.bubble = ChatBubbleWindow("")
 
-        news_themes = ["video games", "politics", "sports", "science", "technology", "entertainment", "business", "health"]
+        news_themes = ["video games", "politics", "sports", "science",
+                       "technology", "entertainment", "business", "health"]
 
         self.news = fetch_news(rng_choice(news_themes))
         self.newsIndex = 0
@@ -41,7 +43,8 @@ class MikoWindow(QMainWindow):
         self.setWindowFlag(Qt.X11BypassWindowManagerHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.mascotLabel = self.create_label("Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
+        self.mascotLabel = self.create_label(
+            "Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
         self.mascotLabel.mouseReleaseEvent = self.mouseReleaseEvent
 
         self.mascotImage = QPixmap("mascot.png")
@@ -82,7 +85,7 @@ class MikoWindow(QMainWindow):
     def idle_say(self):
         self.speak(None)
         QTimer.singleShot(45_000, self.idle_say)
-    
+
     def flip_coin(self, _):
         self.say("Heads" if rng_range(0, 1) == 0 else "Tails")
 
@@ -113,7 +116,9 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        text = predict(text, Model.DAVINCI)
+        REGEX = r"[.;?!]"
+        prediction = predict(text, Model.DAVINCI)
+        text = re.sub(REGEX, "\n", text) + re.sub(REGEX, "\n", prediction)
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
@@ -134,7 +139,7 @@ class MikoWindow(QMainWindow):
         else:
             text = get_response(f"[name: {self.name}]#origin#")
         self.say(text)
-    
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isBeingDragged = True
@@ -143,11 +148,12 @@ class MikoWindow(QMainWindow):
                 self.speak(event)
         else:
             self.toggle_labels(event)
-    
+
     def mouseMoveEvent(self, event):
         if self.isBeingDragged:
-            self.move(event.globalX() - self.width() // 2, event.globalY() - self.height() // 2)
-    
+            self.move(event.globalX() - self.width() // 2,
+                      event.globalY() - self.height() // 2)
+
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isBeingDragged = False
@@ -177,6 +183,7 @@ class MikoWindow(QMainWindow):
             y = self.HEIGHT - self.height()
 
         self.move(x, y)
+
 
 if __name__ == "__main__":
     from sys import argv

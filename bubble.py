@@ -1,14 +1,15 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from outlinelabel import OutlineLabel
 
 
-class ChatBubbleLabel(OutlineLabel):
+class ChatBubbleLabel(QLabel):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
         self.setFont(QFont("Arial", 21))
-        self.setOutlineThickness(1 / 8)
+        self.setStyleSheet("color: white;")
+        # self.setOutlineThickness(1 / 8)
 
 
 class ChatBubbleWindow(QMainWindow):
