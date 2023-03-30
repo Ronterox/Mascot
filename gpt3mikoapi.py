@@ -56,3 +56,6 @@ def predict(prompt, model=Model.ADA, temp=0.5, max_tokens=60, top_p=1, freq_pena
     print(f"TOTAL COST: {cost} USD in {total_time:.2f} seconds")
     print(f"TOTAL COST SESSION: {session_total_cost} USD")
     return response_text
+
+if __name__ == "__main__":
+    predict("Hello, world!", Model.DAVINCI)

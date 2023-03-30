@@ -56,7 +56,7 @@ class OutlineLabel(QLabel):
         font, height = self.font(), metrics.height()
         lines = self.text().splitlines()
         for i, line in enumerate(lines):
-            path.addText(0, i * height + height, font, line)
+            path.addText(self.x(), i * height + height, font, line)
 
         qp = QPainter(self)
         qp.setRenderHint(QPainter.Antialiasing)

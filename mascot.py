@@ -80,11 +80,11 @@ class MikoWindow(QMainWindow):
 
     def introduction(self):
         self.say(get_response(f"[name:{self.name}]#salutation#, \n#goodbye#"))
-        QTimer.singleShot(10_000, self.idle_say)
+        QTimer.singleShot(45_000, self.idle_say)
 
     def idle_say(self):
-        self.speak(None)
-        QTimer.singleShot(45_000, self.idle_say)
+        waitTime = self.speak(None)
+        QTimer.singleShot(waitTime + 45_000, self.idle_say)
 
     def flip_coin(self, _):
         self.say("Heads" if rng_range(0, 1) == 0 else "Tails")
@@ -116,16 +116,18 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        REGEX = r"[.;?!]"
-        prediction = predict(text, Model.DAVINCI)
-        text = re.sub(REGEX, "\n", text) + re.sub(REGEX, "\n", prediction)
+        PROMPT = "Reformat and summarize the following text with no more than 32 words, and no less than 16 words, keep the same POV:\n\n"
+        prediction = predict(PROMPT + text, Model.BABBAGE)
+        text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", prediction)).strip()
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
         if self.mode & (Modes.TALK | Modes.NORMAL):
             from voice import say_tts
-            say_tts(text)
-        QTimer.singleShot(10000, self.bubble.hide)
+            say_tts(text.replace("\n", ". "))
+        waitTime = int(len(text) * 0.1 * 1000)
+        QTimer.singleShot(waitTime, self.bubble.hide)
+        return waitTime
 
     def open_news(self, _):
         title, desc = self.news[self.newsIndex]
@@ -138,7 +140,7 @@ class MikoWindow(QMainWindow):
             text = "Remember " + self.noteapp.get_text(tkText)
         else:
             text = get_response(f"[name: {self.name}]#origin#")
-        self.say(text)
+        return self.say(text)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
