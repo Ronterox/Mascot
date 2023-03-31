@@ -1,6 +1,6 @@
 import tkinter as tk
-from func.moduler import module_path
-from func.rng import rng_range, rng_choice
+from backend.func.moduler import module_path
+from backend.func.rng import rng_range, rng_choice
 import json
 
 BG_COLORS = ["dark cyan", "cyan", "dark blue", "blue", "dark green", "green", "yellow", "dark orange", "orange", "dark red", "red", "dark magenta", "magenta", "dark violet", "violet", "dark gray", "gray", "black"]

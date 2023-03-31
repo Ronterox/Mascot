@@ -5,9 +5,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from backend.internet import fetch_news
 from backend.personality import get_response
 from backend.gpt3mikoapi import predict, Model
+from backend.func.rng import rng_range, rng_choice
 from interfaces.bubble import ChatBubbleWindow
 from interfaces.outlinelabel import OutlineLabel
-from func.rng import rng_range, rng_choice
 from sticky import StickyNotes
 from enum import IntEnum
 import re
