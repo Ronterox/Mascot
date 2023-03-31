@@ -2,6 +2,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
+LOG_PATH = "logs/soup.html"
+
 def fetch_news(query):
     url = f"https://www.google.com/search?q={query}&tbm=nws"
 
@@ -17,9 +19,8 @@ def fetch_news(query):
     titles = soup.find_all("div", {"role": "heading"})
 
     if not titles:
-        open("soup.html", "w").write(soup.prettify())
-        os.system("xdg-open soup.html")
-        os.remove("soup.html")
+        open(LOG_PATH, "w").write(soup.prettify())
+        os.system(f"xdg-open {LOG_PATH}")
 
     news = []
     for title in titles:

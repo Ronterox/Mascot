@@ -2,20 +2,22 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from internet import fetch_news
-from outlinelabel import OutlineLabel
-from personality import get_response
+from backend.internet import fetch_news
+from backend.personality import get_response
+from func.rng import rng_range, rng_choice
+from backend.gpt3mikoapi import predict, Model
+from interfaces.bubble import ChatBubbleWindow
+from interfaces.outlinelabel import OutlineLabel
 from sticky import StickyNotes
-from bubble import ChatBubbleWindow
-from rng import rng_range, rng_choice
-from gpt3mikoapi import predict, Model
 from enum import IntEnum
 import re
+
 
 class Modes(IntEnum):
     NORMAL = 1
     SILENT = 2
     TALK = 4
+
 
 class MikoWindow(QMainWindow):
     SPD = 25
@@ -123,7 +125,7 @@ class MikoWindow(QMainWindow):
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
         if self.mode & (Modes.TALK | Modes.NORMAL):
-            from voice import say_tts
+            from backend.voice import say_tts
             say_tts(text.replace("\n", ". "))
         waitTime = int(len(text) * 0.1 * 1000)
         QTimer.singleShot(waitTime, self.bubble.hide)
@@ -153,8 +155,7 @@ class MikoWindow(QMainWindow):
 
     def mouseMoveEvent(self, event):
         if self.isBeingDragged:
-            self.move(event.globalX() - self.width() // 2,
-                      event.globalY() - self.height() // 2)
+            self.move(event.globalX() - self.width() // 2, event.globalY() - self.height() // 2)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:

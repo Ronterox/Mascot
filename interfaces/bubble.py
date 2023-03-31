@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from outlinelabel import OutlineLabel
+from interfaces.outlinelabel import OutlineLabel
 
 
 class ChatBubbleLabel(OutlineLabel):

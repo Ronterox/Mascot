@@ -1,8 +1,11 @@
 import tkinter as tk
-from rng import rng_range, rng_choice
+from func.moduler import module_path
+from func.rng import rng_range, rng_choice
 import json
 
 BG_COLORS = ["dark cyan", "cyan", "dark blue", "blue", "dark green", "green", "yellow", "dark orange", "orange", "dark red", "red", "dark magenta", "magenta", "dark violet", "violet", "dark gray", "gray", "black"]
+
+NOTES_PATH = module_path("data/notes.json")
 
 class StickyNotes(tk.Tk):
     def __init__(self):
@@ -76,12 +79,12 @@ class StickyNotes(tk.Tk):
         notes = []
         for note, text in self.notes:
             notes.append({"content": self.get_text(text), "size_and_pos": note.geometry()})
-        json.dump(notes, open("notes.json", "w"), indent=4)
+        json.dump(notes, open(NOTES_PATH, "w"), indent=4)
 
     def load_notes(self):
         self.notes = []
         try:
-            for data in json.load(open("notes.json")):
+            for data in json.load(open(NOTES_PATH)):
                 note, text = self.new_note()
                 text.insert("1.0", data["content"])
                 note.geometry(data["size_and_pos"])

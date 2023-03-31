@@ -1,5 +1,6 @@
 import tracery as tr
 from tracery.modifiers import base_english
+from func.moduler import module_path
 import json
 
 # Tracery syntax
@@ -21,7 +22,9 @@ import json
 # "setActions": ["[occupations:#occupations#][animals:#animals#, human, robot]"]
 # "origin": ["#[#setActions#]replace#"]
 
-data = json.load(open("personality.json", "r", encoding="utf-8"))
+DATA_PATH = module_path("data/personality.json")
+
+data = json.load(open(DATA_PATH, "r", encoding="utf-8"))
 
 phrases = tr.Grammar({
     "greeting": data["greetings"],
@@ -50,3 +53,11 @@ def get_response(txt, seed=None):
 if __name__ == "__main__":
     tr.random.seed(2217771)
     print(get_response("[name:#getName#]#salutation#, \n#goodbye#"))
+    
+    # Strongly Agree - Strongly Disagree 
+    # 3 - 0 - 3
+
+    # Extraversion (E) vs. Introversion (I)
+    # Sensing (S) vs. Intuition (N)
+    # Thinking (T) vs. Feeling (F)
+    # Judging (J) vs. Perceiving (P)
