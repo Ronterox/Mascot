@@ -4,10 +4,10 @@ from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from backend.internet import fetch_news
 from backend.personality import get_response
-from func.rng import rng_range, rng_choice
 from backend.gpt3mikoapi import predict, Model
 from interfaces.bubble import ChatBubbleWindow
 from interfaces.outlinelabel import OutlineLabel
+from func.rng import rng_range, rng_choice
 from sticky import StickyNotes
 from enum import IntEnum
 import re
