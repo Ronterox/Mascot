@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from backend.internet import fetch_news
-from backend.personality import get_response
+from backend.proceduralpersonality import get_response
 from backend.gpt3mikoapi import predict, Model
 from backend.func.rng import rng_range, rng_choice
 from interfaces.bubble import ChatBubbleWindow
@@ -119,8 +119,12 @@ class MikoWindow(QMainWindow):
 
     def say(self, text):
         PROMPT = "Reformat and summarize the following text with no more than 32 words, and no less than 16 words, keep the same POV:\n\n"
-        prediction = predict(PROMPT + text, Model.BABBAGE)
-        text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", prediction)).strip()
+        try:
+            text = predict(PROMPT + text, Model.DAVINCI)
+        except Exception as e:
+            print(e)
+            text = text.replace(PROMPT, "")
+        text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", text)).strip()
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)

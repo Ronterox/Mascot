@@ -1,11 +1,10 @@
 import tkinter as tk
-from backend.func.moduler import module_path
 from backend.func.rng import rng_range, rng_choice
 import json
 
 BG_COLORS = ["dark cyan", "cyan", "dark blue", "blue", "dark green", "green", "yellow", "dark orange", "orange", "dark red", "red", "dark magenta", "magenta", "dark violet", "violet", "dark gray", "gray", "black"]
 
-NOTES_PATH = module_path("data/notes.json")
+NOTES_PATH = "data/notes.json"
 
 class StickyNotes(tk.Tk):
     def __init__(self):

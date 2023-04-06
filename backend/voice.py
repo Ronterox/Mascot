@@ -8,14 +8,14 @@ tts = TTS(model_name, gpu=True)
 lang = tts.languages[0]
 speaker = tts.speakers[2]
 
-AUDIO_PATH = module_path("audio")
+AUDIO_PATH = module_path("audio", __name__)
 SAMPLE_PATH = f"{AUDIO_PATH}/miku.wav"
 OUTPUT_PATH = f"{AUDIO_PATH}/output.wav"
 
 def say_tts(text):
     try:
         tts.tts_to_file(text, language=lang, speaker_wav=SAMPLE_PATH, file_path=OUTPUT_PATH)
-        Process(target=os.system, args=(f"aplay {OUTPUT_PATH}",)).start()
+        Process(target=os.system, args=(f"amixer set Master 50% && aplay {OUTPUT_PATH}",)).start()
     except Exception as e:
         print(e)
 

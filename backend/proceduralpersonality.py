@@ -22,7 +22,7 @@ import json
 # "setActions": ["[occupations:#occupations#][animals:#animals#, human, robot]"]
 # "origin": ["#[#setActions#]replace#"]
 
-DATA_PATH = module_path("data/personality.json")
+DATA_PATH = module_path("data/personality.json", __name__)
 
 data = json.load(open(DATA_PATH, "r", encoding="utf-8"))
 
@@ -41,23 +41,17 @@ phrases = tr.Grammar({
     "something": ["#cheer_up#", "#waste_time#"],
     "meaning": ["there is nothing like #meaning_of_life#", "I believe that the meaning of life is #meaning_of_life#", "without #meaning_of_life# I'm nothing"],
     "goodbye": "I believe that the meaning of life is #meaning_of_life#\nNow #something.lowercase#\n#farewell.capitalize#,",
-    "origin": ["#salutation#", "#question# #response#", "#something#", "#goodbye#", "#meaning_of_life#", "#meaning#", "#meaning_of_life# #something#", "#meaning_of_life# #meaning_of_life# and #meaning_of_life#" ]
+    "origin": ["#salutation#", "#question# #response#", "#something#", "#goodbye#", "#meaning_of_life#", "#meaning#", "#meaning_of_life# #something#", "#meaning_of_life# #meaning_of_life# and #meaning_of_life#"]
 })
 phrases.add_modifiers(base_english)
+
 
 def get_response(txt, seed=None):
     if seed:
         tr.random.seed(seed)
     return phrases.flatten(txt)
 
+
 if __name__ == "__main__":
     tr.random.seed(2217771)
     print(get_response("[name:#getName#]#salutation#, \n#goodbye#"))
-    
-    # Strongly Agree - Strongly Disagree 
-    # 3 - 0 - 3
-
-    # Extraversion (E) vs. Introversion (I)
-    # Sensing (S) vs. Intuition (N)
-    # Thinking (T) vs. Feeling (F)
-    # Judging (J) vs. Perceiving (P)

@@ -1,3 +1,3 @@
 
-def module_path(path):
-    return path if __name__ == '__main__' else f"../{path}"
+def module_path(path, main):
+    return f"../{path}" if main == '__main__' else path

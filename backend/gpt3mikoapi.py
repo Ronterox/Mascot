@@ -17,15 +17,15 @@ class Model(IntEnum):
     CURIE = 2
     DAVINCI = 3
 
-
-def count_tokens(model, prompt):
+def count_tokens(model, prompt, show_output=True):
     encoding = tiktoken.encoding_for_model(model)
     tokens = len(encoding.encode(prompt))
-    print(f"{tokens} tokens")
+    if show_output:
+        print(f"{tokens} tokens")
     return tokens
 
 
-def predict(prompt, model=Model.ADA, temp=0.5, max_tokens=60, top_p=1, freq_penalty=0.5, pres_penalty=0):
+def predict(prompt, model=Model.ADA, temp=0.5, max_tokens=100, top_p=1, freq_penalty=0.5, pres_penalty=0):
     global session_total_cost
 
     MODEL = MODELS[model][0]
