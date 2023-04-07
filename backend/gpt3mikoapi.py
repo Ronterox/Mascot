@@ -25,7 +25,7 @@ def count_tokens(model, prompt, show_output=True):
     return tokens
 
 
-def predict(prompt, model=Model.ADA, temp=0.5, max_tokens=100, top_p=1, freq_penalty=0.5, pres_penalty=0):
+def predict(prompt, model=Model.DAVINCI, temp=0.5, max_tokens=100, top_p=1, freq_penalty=0.5, pres_penalty=0):
     global session_total_cost
 
     MODEL = MODELS[model][0]

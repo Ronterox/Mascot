@@ -1,0 +1,10 @@
+{
+	"Extraversion": ["Make new friends", "Talk to known people", "Enjoy group activities"],
+	"Sensing": ["Explore random topics", "Complete tasks methodically", "Enjoy art museums"],
+	"Feeling": ["Empathize with others", "Affected by emotions", "Value helping others"],
+	"Judging": ["Plan and organize", "Finish one project before starting another", "Prefer to-do lists", "Confident things will work out"],
+	"Introversion": ["Avoid attention", "Prefer working alone", "Feel overwhelmed"],
+	"Intuition": ["Explore random topics", "Interested in afterlife", "Intrigued by controversy"],
+	"Thinking": ["Plan and organize", "Rely on rationality", "Difficulty understanding feelings", "Avoid making phone calls"],
+	"Perceiving": ["Prefer spontaneity", "Enjoy open endings", "Worry about negative outcomes", "Struggle with deadlines"]
+}

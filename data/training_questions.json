@@ -1,0 +1,78 @@
+{
+	"Extraversion": {
+		"questions": [
+			"Hey, are you the type of person who enjoys meeting new people at social events?",
+			"Do you like to initiate plans with your friends, or do you prefer for them to take the lead?",
+			"How do you feel about spontaneous social events compared to planned ones?",
+			"Are you more comfortable in busy or quiet environments?"
+		]
+	},
+	"Sensing": {
+		"questions": [
+			"Do you enjoy exploring new topics in your free time?",
+			"Are you a methodical person when completing tasks?",
+			"How do you feel about highly theoretical discussions?",
+			"Do you enjoy going to art museums?",
+			"Can you easily pick up on someone's emotions?"
+		]
+	},
+	"Feeling": {
+		"questions": [
+			"Do you find yourself becoming emotional when you see other people crying?",
+			"Are you a sentimental person?",
+			"What brings you happiness, your own accomplishments or helping others?",
+			"Do you easily empathize with people who have had different life experiences than you?",
+			"Are you considerate of others, even when they are at fault?",
+			"Would you give up a good opportunity for someone who needed it more than you?"
+		]
+	},
+	"Judging": {
+		"questions": [
+			"Are you someone who likes to plan and prepare for any situation?",
+			"Do you prefer to finish one task before starting another?",
+			"Do you use schedules or lists to keep yourself organized?",
+			"How important is it for you to make a good impression on others?",
+			"Are you able to relax before completing your responsibilities?",
+			"Do you get impatient with people who are less efficient than you?",
+			"Are you a procrastinator?",
+			"How comfortable are you with making decisions?",
+			"Do you make a to-do list every day?",
+			"How do you react when your plans are disrupted?"
+		]
+	},
+	"Introversion": {
+		"questions": [
+			"Are you comfortable meeting new people at social events?",
+			"Do you prefer to work alone or in a group setting?",
+			"Are you someone who enjoys pondering philosophical questions?",
+			"Do you often feel overwhelmed?",
+			"Do you avoid drawing attention to yourself?"
+		]
+	},
+	"Intuition": {
+		"questions": ["Do you enjoy exploring random topics that interest you?", "Are you fascinated by the question of what happens after death?", "Do you like controversial topics?"]
+	},
+	"Thinking": {
+		"questions": [
+			"Are you someone who likes to plan and prepare for any situation?",
+			"How do you react when you make a mistake?",
+			"Are you interested in discussing creative works?",
+			"Do you rely more on your head than your heart?",
+			"Do you believe that people should rely more on rationality than their feelings?",
+			"Do you find it difficult to understand other people's emotions?",
+			"Do you avoid making phone calls?"
+		]
+	},
+	"Perceiving": {
+		"questions": [
+			"Do you prefer to plan out your day or just go with the flow?",
+			"Do you like to interpret the endings of books and movies yourself?",
+			"Do you worry about things taking a turn for the worse?",
+			"Are you comfortable in leadership roles?",
+			"Are you artistic?",
+			"Do you often second-guess your decisions?",
+			"Do you try to understand different perspectives?",
+			"Do you struggle with deadlines?"
+		]
+	}
+}
