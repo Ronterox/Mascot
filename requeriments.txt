@@ -1,0 +1,8 @@
+PyQt5
+requests
+bs4
+tracery
+tqdm
+PyYAML
+tts
+numpy==1.22.4

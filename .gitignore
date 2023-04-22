@@ -4,3 +4,4 @@ notes.json
 *.txt
 *.html
 *.log
+!requeriments.txt

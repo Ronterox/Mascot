@@ -1,8 +1,7 @@
-#!/home/rontero/Documents/Program-Files/miniconda3/bin/python3
+#!/home/rontero/Documents/Program-Files/mambaforge/envs/mascot/bin/python
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from backend.gpt4allmiko import predict
 from backend.internet import fetch_news
 from backend.proceduralpersonality import get_response
 from backend.func.rng import rng_range, rng_choice
@@ -118,7 +117,7 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        text = predict(text)
+        # text = predict(text)
         text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", text)).strip()
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
