@@ -2,8 +2,9 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from backend.internet import fetch_news
 from backend.proceduralpersonality import get_response
+from backend.gptrequest import predict
+from backend.internet import fetch_news
 from backend.func.rng import rng_range, rng_choice
 from interfaces.bubble import ChatBubbleWindow
 from interfaces.outlinelabel import OutlineLabel
@@ -117,14 +118,17 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        # text = predict(text)
+        text = predict(text)
         text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", text)).strip()
+
         self.bubble.change_text(text)
         self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
+
         if self.mode & (Modes.TALK | Modes.NORMAL):
             from backend.voice import say_tts
             say_tts(text.replace("\n", ". "))
+
         waitTime = int(len(text) * 0.1 * 1000)
         QTimer.singleShot(waitTime, self.bubble.hide)
         return waitTime
