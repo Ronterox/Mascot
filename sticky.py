@@ -1,23 +1,36 @@
 import tkinter as tk
-from backend.func.rng import rng_range, rng_choice
 import json
+from backend.func.rng import rng_range, rng_choice
+from backend.activitiesloop import create_activities_loop
 
 BG_COLORS = ["dark cyan", "cyan", "dark blue", "blue", "dark green", "green", "yellow", "dark orange", "orange", "dark red", "red", "dark magenta", "magenta", "dark violet", "violet", "dark gray", "gray", "black"]
-
 NOTES_PATH = "data/notes.json"
 
 class StickyNotes(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Sticky Note")
-        self.wm_maxsize(100, 50)
+        self.maxY = 0
+
         self.load_notes()
         self.create_button("New", self.new_note)
         self.create_button("Save", self.save_notes)
+        self.create_button("Start loop", self.loop_notes)
+        self.wm_maxsize(100, self.maxY)
 
     def create_button(self, text, command):
         button = tk.Button(self, text=text, command=command)
         button.pack()
+        self.maxY += 25
+    
+    def loop_notes(self):
+        notes = [[], []]
+        idx = 0
+        for _, textbox in self.notes:
+            firstline_title = self.get_text(textbox).splitlines()[0].split(" ", 3)
+            notes[idx].append(" ".join(firstline_title))
+            idx = (idx + 1) % 2
+        create_activities_loop(notes)
 
     def new_note(self):
         note = tk.Toplevel(self)
@@ -76,8 +89,8 @@ class StickyNotes(tk.Tk):
 
     def save_notes(self):
         notes = []
-        for note, text in self.notes:
-            notes.append({"content": self.get_text(text), "size_and_pos": note.geometry()})
+        for noteWindow, textbox in self.notes:
+            notes.append({"content": self.get_text(textbox), "size_and_pos": noteWindow.geometry()})
         json.dump(notes, open(NOTES_PATH, "w"), indent=4)
 
     def load_notes(self):

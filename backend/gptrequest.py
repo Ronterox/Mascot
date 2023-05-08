@@ -12,7 +12,7 @@ def predict(prompt):
         'prompt': prompt,
         'max_new_tokens': 250,
         'do_sample': True,
-        'temperature': 1.3,
+        'temperature': 0.5,
         'top_p': 0.1,
         'typical_p': 1,
         'repetition_penalty': 1.18,
@@ -34,13 +34,13 @@ def predict(prompt):
     try:
         response = requests.post(URI, json=request)
     except requests.exceptions.ConnectionError:
-        return prompt
+        return None
 
     if response.status_code == 200:
         result = response.json()['results'][0]['text']
         print(f"Prompt: {prompt}\nResult: {result}")
         return result
-    return prompt
+    return None
 
 if __name__ == '__main__':
     prompt = "In order to make homemade bread, follow these steps:\n1)"

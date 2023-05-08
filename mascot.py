@@ -45,8 +45,7 @@ class MikoWindow(QMainWindow):
         self.setWindowFlag(Qt.X11BypassWindowManagerHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.mascotLabel = self.create_label(
-            "Miku", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
+        self.mascotLabel = self.create_label("Miko", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
         self.mascotLabel.mouseReleaseEvent = self.mouseReleaseEvent
 
         self.mascotImage = QPixmap("mascot.png")
@@ -89,7 +88,8 @@ class MikoWindow(QMainWindow):
         QTimer.singleShot(waitTime + 45_000, self.idle_say)
 
     def flip_coin(self, _):
-        self.say("Heads" if rng_range(0, 1) == 0 else "Tails")
+        prompt = "I flip a coin and the result is: "
+        self.say(prompt + ("Heads" if rng_range(0, 1) == 0 else "Tails"))
 
     def create_label(self, text, action, visible=False, addToLabels=True, clickType=Qt.LeftButton):
         label = OutlineLabel(text, self)
@@ -118,11 +118,14 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        text = predict(text)
+        prompt = f"The summarize version of the following text ```{text}``` is:"
+        prediction = predict(prompt)
+        text = prediction if prediction else text[0:124]
         text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", text)).strip()
 
         self.bubble.change_text(text)
-        self.bubble.move(self.x() - self.bubble.label.width() // 2, self.y() - self.bubble.label.height())
+        self.bubble.move(self.x() - self.bubble.label.width() //
+                         2, self.y() - self.bubble.label.height())
         self.bubble.setVisible(True)
 
         if self.mode & (Modes.TALK | Modes.NORMAL):
@@ -141,7 +144,7 @@ class MikoWindow(QMainWindow):
     def speak(self, _):
         if rng_range(0, 100) < 25 and len(self.noteapp.notes):
             _, tkText = rng_choice(self.noteapp.notes)
-            text = "Remember " + self.noteapp.get_text(tkText)
+            text = "Remember that you have to " + self.noteapp.get_text(tkText)
         else:
             text = get_response(f"[name: {self.name}]#origin#")
         return self.say(text)
@@ -157,7 +160,8 @@ class MikoWindow(QMainWindow):
 
     def mouseMoveEvent(self, event):
         if self.isBeingDragged:
-            self.move(event.globalX() - self.width() // 2, event.globalY() - self.height() // 2)
+            self.move(event.globalX() - self.width() // 2,
+                      event.globalY() - self.height() // 2)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
