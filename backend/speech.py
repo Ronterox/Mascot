@@ -1,9 +1,18 @@
 import speech_recognition as sr
-from voice import say_tts as say
+from voice import say_tts
 from youtubeplay import play_video
 import os
 
 song_playing = False
+
+
+def say(txt: str) -> None:
+    print(txt)
+    say_tts(txt)
+
+
+def close_mpv() -> None:
+    os.system("pkill mpv")
 
 
 def do_action(sentence: str) -> None:
@@ -14,7 +23,7 @@ def do_action(sentence: str) -> None:
 
     if song_playing and sentence.startswith('stop'):
         say("Okay, I will stop the song")
-        os.system("pkill mpv")
+        close_mpv()
         song_playing = False
         return
 
@@ -24,6 +33,8 @@ def do_action(sentence: str) -> None:
     title = play_video(song)
 
     if title:
+        if song_playing:
+            close_mpv()
         say(f"Now playing {title}")
         song_playing = True
     else:
@@ -46,7 +57,10 @@ def recognize_voice() -> str:
         for result in results['alternative']:
             sentence = result['transcript']
             if sentence.lower().startswith('miko'):
+                print("[Miko]", sentence)
                 return sentence
+            else:
+                print("[Not Miko]", sentence)
     except Exception as e:
         print("Error: ", e)
 

@@ -5,3 +5,4 @@ notes.json
 *.html
 *.log
 !requeriments.txt
+audio/*.mp4
