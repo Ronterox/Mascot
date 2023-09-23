@@ -57,15 +57,33 @@ def recognize_voice() -> str:
         print("Done!")
 
     try:
-        results = r.recognize_google(audio, show_all=True)
+        results = r.recognize_google(audio, show_all=True, language='en-US')
         print("Results: ", len(results['alternative']))
+        best_sentence = ''
+        max_points = -1
         for result in results['alternative']:
             sentence: str = result['transcript']
-            if re.search(r'mik[aeiou]', sentence.lower()):
-                print("[Miko]", sentence)
-                return sentence
+            found = re.search(r'[mn][ie][kc][aeiou]', sentence.lower())
+            if found:
+                miko = "".join(dict.fromkeys(found[0]))
+                points = 0
+                if miko[0] == 'm':
+                    points += 5
+                if miko[1] == 'i':
+                    points += 5
+                if miko[2] == 'k':
+                    points += 5
+                if miko[3] == 'o':
+                    points += 5
+                elif miko[3] == 'u':
+                    points += 3
+                if points > max_points:
+                    best_sentence = sentence
+                    max_points = points
+                print(f"[Miko ({points})]", sentence)
             else:
                 print("[Not Miko]", sentence)
+        return best_sentence
     except Exception as e:
         print("Error: ", e)
 
