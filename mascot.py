@@ -32,12 +32,7 @@ class MikoWindow(QMainWindow):
         super().__init__()
         self.mode = mode
         self.bubble = ChatBubbleWindow("")
-
-        news_themes = ["video games", "politics", "sports", "science",
-                       "technology", "entertainment", "business", "health"]
-
-        self.news = fetch_news(rng_choice(news_themes))
-        self.newsIndex = 0
+        self.news = []
 
         self.name = get_response("#getName.capitalize#")
 
@@ -45,7 +40,8 @@ class MikoWindow(QMainWindow):
         self.setWindowFlag(Qt.X11BypassWindowManagerHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.mascotLabel = self.create_label("Miko", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
+        self.mascotLabel = self.create_label(
+            "Miko", self.mousePressEvent, visible=True, addToLabels=False, clickType=Qt.RightButton | Qt.LeftButton)
         self.mascotLabel.mouseReleaseEvent = self.mouseReleaseEvent
 
         self.mascotImage = QPixmap("mascot.png")
@@ -118,7 +114,7 @@ class MikoWindow(QMainWindow):
         self.noteapp = StickyNotes()
 
     def say(self, text):
-        prompt = f"The summarize version of the following text ```{text}``` is:"
+        prompt = f"The following text ```{text}``` summarized is:"
         prediction = predict(prompt)
         text = prediction if prediction else text[0:124]
         text = re.sub(r"\n\s*\n", "\n", re.sub(r"[.;?!]", "\n", text)).strip()
@@ -137,6 +133,12 @@ class MikoWindow(QMainWindow):
         return waitTime
 
     def open_news(self, _):
+        if not self.news:
+            news_themes = ["video games", "politics", "sports", "science",
+                           "technology", "entertainment", "business", "health"]
+            self.news = fetch_news(rng_choice(news_themes))
+
+        self.newsIndex = 0
         title, desc = self.news[self.newsIndex]
         self.newsIndex = (self.newsIndex + 1) % len(self.news)
         self.say(f"Today's news are {title}...{desc}")

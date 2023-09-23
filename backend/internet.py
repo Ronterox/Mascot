@@ -24,12 +24,13 @@ def fetch_news(query):
 
     news = []
     for title in titles:
-        news.append((title.text, title.find_next_sibling("div").text))
+        desc = title.find_next_sibling("div")
+        news.append((title.text, desc.text if desc is not None else ""))
 
     return news
 
 if __name__ == "__main__":
-    news = fetch_news("warner bros entrada parque")
+    news = fetch_news("video games")
     for title, desc in news:
         print(f"{title:-^100}")
         print(desc)

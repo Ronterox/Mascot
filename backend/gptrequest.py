@@ -10,12 +10,12 @@ URI = f'http://{HOST}/api/v1/generate'
 def predict(prompt):
     request = {
         'prompt': prompt,
-        'max_new_tokens': 250,
+        'max_new_tokens': 120,
         'do_sample': True,
         'temperature': 0.5,
         'top_p': 0.1,
         'typical_p': 1,
-        'repetition_penalty': 1.18,
+        'repetition_penalty': 1.15,
         'top_k': 40,
         'min_length': 0,
         'no_repeat_ngram_size': 0,
