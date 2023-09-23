@@ -1,7 +1,9 @@
 import speech_recognition as sr
 from voice import say_tts
 from youtubeplay import play_video
+import re
 import os
+
 
 song_playing = False
 
@@ -12,7 +14,9 @@ def say(txt: str) -> None:
 
 
 def close_mpv() -> None:
+    global song_playing
     os.system("pkill mpv")
+    song_playing = False
 
 
 def do_action(sentence: str) -> None:
@@ -21,25 +25,26 @@ def do_action(sentence: str) -> None:
     mikoIndex = sentence.lower().find('miko')
     sentence = sentence[mikoIndex + 4:].strip()
 
-    if song_playing and sentence.startswith('stop'):
+    if not sentence or song_playing and sentence == 'stop':
         say("Okay, I will stop the song")
         close_mpv()
-        song_playing = False
         return
 
     song = sentence[4:].strip() if sentence.lower(
     ).startswith('play') else sentence
     say(f"Okay, I will play {song}")
+
+    if song_playing:
+        close_mpv()
+
     title = play_video(song)
 
     if title:
-        if song_playing:
-            close_mpv()
         say(f"Now playing {title}")
         song_playing = True
     else:
         say("Sorry, I couldn't find the song you asked for")
-        song_playing = False
+        close_mpv()
 
 
 def recognize_voice() -> str:
@@ -55,8 +60,8 @@ def recognize_voice() -> str:
         results = r.recognize_google(audio, show_all=True)
         print("Results: ", len(results['alternative']))
         for result in results['alternative']:
-            sentence = result['transcript']
-            if sentence.lower().startswith('miko'):
+            sentence: str = result['transcript']
+            if re.search(r'mik[aeiou]', sentence.lower()):
                 print("[Miko]", sentence)
                 return sentence
             else:
