@@ -30,6 +30,10 @@ def do_action(sentence: str) -> None:
         close_mpv()
         return
 
+    if re.search(r'turn off|shutdown', sentence):
+        os.system('shutdown 0')
+        return
+
     song = sentence[4:].strip() if sentence.lower(
     ).startswith('play') else sentence
     say(f"Okay, I will play {song}")
@@ -63,7 +67,7 @@ def recognize_voice() -> str:
         max_points = -1
         for result in results['alternative']:
             sentence: str = result['transcript']
-            found = re.search(r'[mn][ie][kc][aeiou]', sentence.lower())
+            found = re.search(r'[mn][ie]{1,2}[kc]{1,2}[aeiou]', sentence.lower())
             if found:
                 miko = "".join(dict.fromkeys(found[0]))
                 points = 0
